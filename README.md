@@ -1,7 +1,15 @@
 # cysmotifsearcher
 Cysmotif searcher
 
+Written by Andrey Shelenkov, Vavilov Institute of General Genetics, Russian Academy Of Sciences.<br>
+Last update to the program package was made on May 16, 2017. Current version is 3.0.<br>Made avaialble in github on November 12, 2017.
+<p>
 Cysmotif searcher is a set of Perl scripts that performs profile search to reveal peptide sequences possessing cysteine motifs common to various families of AMPs and other cysteine-rich peptides. It can be run on any Linux machine with Perl installed, and can also be executed on Windows machines, but with some limitations (SPADA and SignalP cannot be integrated into the pipeline in this case). Motifs to search for were derived from literature, and then were supplemented and further refined during several iterations of searching and refining steps.
+<p>
+Scinetific papers describing the application of Cysmotif searcher to real biological data analysis can be found using the links below:<br>
+ 1.	A.A. Slavokhotova, A. A. Shelenkov et al. (2017) Defense peptide repertoire of Stellaria media predicted by high throughput next generation sequencing, Biochimie, 135:15-27, https://www.ncbi.nlm.nih.gov/pubmed/28038935 <br>
+ 2. A. A. Slavokhotova, A. A. Shelenkov, T. I. Odintsova (2015) Prediction of Leymus arenarius (L.) antimicrobial peptides based on de novo transcriptome assembly, Plant Mol. Biol., 89(3):203-14, https://www.ncbi.nlm.nih.gov/pubmed/26369913<p><p>
+
 
 General usage: cysmotif_searcher.pl [OPTIONS] -m motifs.txt -i input.fasta<br>
 You can always get help by typing cysmotif_searcher.pl --help<p>
