@@ -3,7 +3,7 @@ Cysmotif searcher
 
 Cysmotif searcher is a set of Perl scripts that performs profile search to reveal peptide sequences possessing cysteine motifs common to various families of AMPs and other cysteine-rich peptides. It can be run on any Linux machine with Perl installed, and can also be executed on Windows machines, but with some limitations (SPADA and SignalP cannot be integrated into the pipeline in this case). Motifs to search for were derived from literature, and then were supplemented and further refined during several iterations of searching and refining steps.
 
-General usage: cysmotif_searcher.pl [OPTIONS] -m motif.txt -i input.fasta<br>
+General usage: cysmotif_searcher.pl [OPTIONS] -m motifs.txt -i input.fasta<br>
 You can always get help by typing cysmotif_searcher.pl --help<p>
 
 List of options is as follows:<br>
