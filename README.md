@@ -34,7 +34,7 @@ Requirements:
 
 In order to run the package, yoy should have Perl 5.8 or later installed on your machine (https://www.perl.org/get.html).
 
-In order to check for presenece of signal peptides in motifs (which is very important step of filtration) you should have SignalP program (http://www.cbs.dtu.dk/cgi-bin/nph-sw_request?signalp) installed and should specify the path to its executable in the script under $signalp variable at the beginning of the script.
+In order to check for presence of signal peptides in motifs (which is very important step of filtration) you should have SignalP program (http://www.cbs.dtu.dk/cgi-bin/nph-sw_request?signalp) installed and should specify the path to its executable in the script under $signalp variable at the beginning of the script.
 
 In order to include SPADA in the computational pipeline, you should download spada from https://github.com/orionzhou/SPADA and follow the installation procedure described there. Then you should specify the path to SPADA installation in cysmotif_searcher.pl under $spada_dir variable and to SPADA executable (spada.pl) under $spada variable.
 
