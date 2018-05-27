@@ -10,7 +10,6 @@ Scinetific papers describing the application of Cysmotif searcher to real biolog
  1.	A.A. Slavokhotova, A. A. Shelenkov et al. (2017) Defense peptide repertoire of Stellaria media predicted by high throughput next generation sequencing, Biochimie, 135:15-27, https://www.ncbi.nlm.nih.gov/pubmed/28038935 <br>
  2. A. A. Slavokhotova, A. A. Shelenkov, T. I. Odintsova (2015) Prediction of Leymus arenarius (L.) antimicrobial peptides based on de novo transcriptome assembly, Plant Mol. Biol., 89(3):203-14, https://www.ncbi.nlm.nih.gov/pubmed/26369913<p><p>
 
-
 General usage: cysmotif_searcher.pl [OPTIONS] -m motifs.txt -i input.fasta<br>
 You can always get help by typing cysmotif_searcher.pl --help<p>
 
