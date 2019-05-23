@@ -8,8 +8,8 @@ use lib "$FindBin::Bin";
 use cysmotif;
 
 $program="cysmotif_searcher.pl";  
-$version="3.1";
-$last_update="April 15, 2019";
+$version="3.2";
+$last_update="May 23, 2019";
 $comment="Written by Andrew Shelenkov, VIGG of RAS";
 
 #$signalp="/home/fallandar/spada_soft/signalp-4.1/signalp";
@@ -127,7 +127,6 @@ if (($ARGV[0] eq "--version") || ($ARGV[0] eq "-v") )
   print "$comment\n";
   exit;
 } 
-
 if ($ARGV[0] eq "-h" || $ARGV[0] eq "-help" || $ARGV[0] eq "--help")
 {
   print "You are using $program version $version \n";
@@ -243,7 +242,6 @@ while ($ARGV[0]=~ /^-/)
  }
 	 shift @ARGV;
 }
-
 die "ERROR: Not enough input files specified!\nUsage: $program [OPTIONS] -m motif.txt -i input.fasta\nRun '$program -h' for additional info.\n" if (($nfile<2)&&(!$start_with_sp));
 
 $statn="";
@@ -264,7 +262,6 @@ unless ($no_spada)
  	$names{spadalog}="${filename_noext}_spada.log";
  	$names{spadatabbed}="${filename_noext}_motifs_all_tabbed.txt";
  }
-
 open (LOG,">$names{logf}") || die "Can not open log file for writing: $!\n";
 #flush LOG
 my $previous_default = select(STDOUT);
@@ -275,7 +272,6 @@ $|=1;
 
 printf LOG "###Starting %s, version %s, last update %s###\n### %s ###\n",$program,$version,$last_update,$comment; 
 print_log "Command line: $arg\n";
-
 
 unless ($start_with_sp)
 {
@@ -345,7 +341,6 @@ while (read_fasta_sequence($fh, \%sequence_data_tmp))
 	 if ($posb!=-1)
 	 {$id=substr($id,0,$posb);}
   }
-	
 	$seq=~s/\s+//g;
   $seq=~s/\*//g;
   $seq=~s/[^A-Za-z]//g;
@@ -354,7 +349,6 @@ while (read_fasta_sequence($fh, \%sequence_data_tmp))
   push @ids,$id;
   push @seqs,$seq2;
 }
-
 close $fh;
  unless (@ids == @seqs)
  {
@@ -401,7 +395,6 @@ else
 unless ($start_with_sp)
 {
 	print_log "Searching for motifs...";
-	
   #open files for motif printing
   if ($print_files)
   {
@@ -412,7 +405,6 @@ unless ($start_with_sp)
   	  open $filehandle{$i}, ">", $name or die "Can't open $name for writing: $!";
     }
   }
-  
   if ($names{translated}=~/\.gz$/)
    {open ($fh,"zcat $names{translated} |") || die "Can not open $names{translated}: $!\n";}
   elsif ($names{translated}=~/\.bz2$/)
@@ -466,7 +458,6 @@ unless ($start_with_sp)
           close LOG;  
   	    	die "Sequences in $names{translated} seem not to be amino acid sequences! Check your input file!\n";
   	    }
-  	    
   	    	if ($delete_after_blank)
         	{
 	         $posb=index($name," ");
@@ -476,7 +467,6 @@ unless ($start_with_sp)
 	         if ($posb!=-1)
 	         {$name=substr($name,0,$posb);}
           }
-
 	      $name=~s/\*/_/g;
     	  $k=0;
     	  $match=""; $matchx=""; $match_orf=""; $numm=-1; $final_endc=0;
@@ -581,7 +571,6 @@ unless ($start_with_sp)
    		  $tmp=~s/[C]/<font color=red>C<\/font>/g;
    		  printf OUTH "<BR>%s\n<BR>%s\n<BR>",$uniq{$key}[0],$tmp;
        }
-   		  
   close OUT;
   close OUTX;
   close OUTXX;
@@ -638,9 +627,7 @@ if (-e $signalp)
  unlink "${filename_noext}_signalp.tmp";
 }
 else 
-{
-	print_log "WARNING: signalp was not found in $signalp. Skipping.";
-}
+{	print_log "WARNING: signalp was not found in $signalp. Skipping.";}
 
 if (-e $names{gff})
 #processing signalp results
@@ -776,9 +763,7 @@ unless ($start_with_sp)
   printf OUT "Total sequences with motifs and methionine before motif: %d\n",$motif_all_m-$motif_stat_m{$bignum};
 }
 else
-{
-	 printf OUT "Results for %s\nTotal sequences read:%d\n\n",$filename_source,$num_sp;
-}
+{	 printf OUT "Results for %s\nTotal sequences read:%d\n\n",$filename_source,$num_sp; }
 
 if (-e $names{signalp})
 { 
@@ -830,7 +815,6 @@ unless ($no_spada)
  close SP;
  unlink ("${filename_noext}_1","${filename_noext}_2");
   
- 
  printf OUT "\nTotal sequences found by spada: %d\n", get_num_str_by_grep("${dirname}_spada/61_final.fasta",">");
  
  #combine results with spada and get unique sequences; all other factors held equal, spada results are removed when duplication found 
@@ -838,7 +822,7 @@ unless ($no_spada)
   
  unless ($keep_subseqs)
  {
- 	$cmd=sprintf "fasta_cleaner.pl %s %d > %s", "${filename_noext}_tmp1.fasta",$keep_subseqs_lg,"${filename_noext}_tmp.fasta";
+ 	$cmd=sprintf "cysmotif_fasta_cleaner.pl -l %d %s > %s", $keep_subseqs_lg,"${filename_noext}_tmp1.fasta","${filename_noext}_tmp.fasta";
  	system $cmd;
  	unlink "${filename_noext}_tmp1.fasta";
  }
@@ -864,7 +848,7 @@ unless ($no_spada)
      	$t1=substr($seq,0,$spsplit{$n1}); 
      	$t2=substr($seq,$spsplit{$n1});
      	$origseq{$name}=$t1." ".$t2;
-     	$tabseq{$name}=sprintf "\t\t%s\t%s\t%s\t%s\t%s\n",$t1." ".$t2,"SPADA",$n1,cformula($t2),""; 
+     	$tabseq{$name}=sprintf "\t\t%s\t%s\t%s\t%s\t%s\n",$t1." ".$t2,"SPADA",rename_spada($n1,1),cformula($t2),""; 
      }
 	}
 	close $fh;
@@ -875,7 +859,7 @@ unless ($no_spada)
  
  foreach $key (sort {$uniqseq{$a} cmp $uniqseq{$b}} keys (%uniqseq))
   {
-  	printf OUT2 "%s\n%s\n",$uniqseq{$key},$origseq{$uniqseq{$key}}; 
+  	printf OUT2 "%s\n%s\n",rename_spada($uniqseq{$key},1),$origseq{$uniqseq{$key}}; 
   	$nu++;
   	print OUTT $tabseq{$uniqseq{$key}}
   }
@@ -885,7 +869,6 @@ unless ($no_spada)
  printf OUT "Total unique sequences including spada results: %d\n",$nu;
 }
 close OUT;
-
 
 print_log "Moving files to output dir $dirname...";
 unless ($start_with_sp)

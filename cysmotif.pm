@@ -1,9 +1,9 @@
 package cysmotif;
-#Last update: May 04, 2017
+#Last update: May 23, 2019
 BEGIN{}
 use Exporter;
 our @ISA    = qw(Exporter);
-our @EXPORT = qw(codon2aa get_num_str_by_grep program_time read_fasta_sequence revcomp);
+our @EXPORT = qw(codon2aa get_num_str_by_grep program_time read_fasta_sequence rename_spada revcomp);
 
 our @ACGT=("A","C","G","T"); 
 
@@ -89,6 +89,19 @@ sub read_fasta_sequence
       return;   
    }    
 }#read_fasta_sequence
+
+sub rename_spada
+{
+	#rename spada ids in fasta file
+	my $nm=$_[0];
+	my $flg=0;
+	
+	$flg=1 if ($_[1]); #skip crp removing
+	$nm=~s/_0M_1$/_SPADA/;
+  
+  $nm=~s/^>crp[0-9]+_/>/ unless ($flg);
+  return $nm;
+}#rename_spada
 
 sub revcomp
 {
