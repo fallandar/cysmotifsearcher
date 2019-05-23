@@ -8,8 +8,8 @@ use lib "$FindBin::Bin";
 use cysmotif;
 
 $program="cysmotif_searcher.pl";  
-$version="3.0";
-$last_update="May 16, 2017";
+$version="3.1";
+$last_update="April 15, 2019";
 $comment="Written by Andrew Shelenkov, VIGG of RAS";
 
 #$signalp="/home/fallandar/spada_soft/signalp-4.1/signalp";
@@ -109,6 +109,7 @@ $skip_translation=0;
 $spada_nucl="";
 $spada_precalc_dir="";
 $start_with_sp=0;
+$keep_subseqs=1; $keep_subseqs_lg=1;
 %origseq=();
 %tabseq=();
 
@@ -136,7 +137,7 @@ if ($ARGV[0] eq "-h" || $ARGV[0] eq "-help" || $ARGV[0] eq "--help")
   printf "-i FILE1                set input fasta file to FILE1 (REQUIRED)\n";  
   printf "-m FILE2                set input motif file to FILE2 (REQUIRED)\n\n";  
   printf "-b                      delete everything after first whitespace or star (*) in input fasta headers (useful for trinity) (default=not active)\n";
-#  printf "-c                      allow presence of cysteines in mature peptide after motif (default=not allowed)\n";
+  printf "-k                      remove output sequences that are a subset of other sequences (between spada and cysmotif)(default=keep all)\n";
   printf "-f                      print results for motifs only to one file (default=each motif to separate file)\n";
   printf "-g                      start with using signalP (input file supposed to be like orfonly_with_M)\n";  
   printf "-l LG                   set max length for mature peptide to LG (default=150)\n";  
@@ -174,6 +175,14 @@ while ($ARGV[0]=~ /^-/)
  	$filename_source=$ARGV[0];
  	die "ERROR: Input file (-i arg) $filename_source not found: $!\n" unless (-e $filename_source);
  	$nfile++;
+ }
+ elsif ($ARGV[0]=~ /-k/)
+ #remove spada seqs that are subseq of cysmotif (or vice versa)
+ {
+ 	$keep_subseqs=0;
+ 	shift @ARGV; 
+ 	$keep_subseqs_lg=$ARGV[0];
+ 	die "ERROR: Value for -k option should be >=1! ($keep_subseqs_lg)\n" unless ($keep_subseqs_lg>=1);
  }
  elsif ($ARGV[0]=~ /-l/)
  #set max length for mature peptide
@@ -239,7 +248,7 @@ die "ERROR: Not enough input files specified!\nUsage: $program [OPTIONS] -m moti
 
 $statn="";
 unless ($prefix)
-{$filename_noext=$filename_source; $filename_noext=~s/\.bz2$//;$filename_noext=~s/\.gz$//; $filename_noext=~ s/\.[^.]+$//; $prefix=$filename_source; $statn="${filename_source}_stat.txt"}
+{$filename_noext=$filename_source; $filename_noext=~s/\.bz2$//;$filename_noext=~s/\.gz$//; $filename_noext=~ s/\.[^.]+$//; $prefix=$filename_noext; $statn="${filename_noext}_stat.txt"}
 else
 {$filename_noext=$prefix; $statn="${filename_noext}_stat.txt";}
 
@@ -809,8 +818,8 @@ unless ($no_spada)
  }
  #get signalp splitting point
  %spsplit=();
-$cmd= sprintf "sort -k 2 %s > %s && sort %s > %s","${dirname}_spada/31_model_evaluation/61_final.gtb","${filename_noext}_1","${dirname}_spada/31_model_evaluation/35_sigp.tbl","${filename_noext}_2";
-system $cmd;
+ $cmd= sprintf "sort -k 2 %s > %s && sort %s > %s","${dirname}_spada/31_model_evaluation/61_final.gtb","${filename_noext}_1","${dirname}_spada/31_model_evaluation/35_sigp.tbl","${filename_noext}_2";
+ system $cmd;
  open SP, "join -t \$'\t' -1 2 -2 1 ${filename_noext}_1 ${filename_noext}_2 \| cut -f2,22 |";
  while (<SP>)
  {
@@ -825,12 +834,21 @@ system $cmd;
  printf OUT "\nTotal sequences found by spada: %d\n", get_num_str_by_grep("${dirname}_spada/61_final.fasta",">");
  
  #combine results with spada and get unique sequences; all other factors held equal, spada results are removed when duplication found 
- system "cat $names{end} ${dirname}_spada/61_final.fasta > ${filename_noext}_tmp.fasta";
+ system "cat $names{end} ${dirname}_spada/61_final.fasta > ${filename_noext}_tmp1.fasta";
+  
+ unless ($keep_subseqs)
+ {
+ 	$cmd=sprintf "fasta_cleaner.pl %s %d > %s", "${filename_noext}_tmp1.fasta",$keep_subseqs_lg,"${filename_noext}_tmp.fasta";
+ 	system $cmd;
+ 	unlink "${filename_noext}_tmp1.fasta";
+ }
+ 
  open $fh,"${filename_noext}_tmp.fasta" || print LOG "WARNING: Can not open joined spada fasta file - skipping it: $!\n";
  %uniqseq=();
  
  while (read_fasta_sequence($fh, \%sequence_data_tmp)) 
   {
+  	
   	$name=$sequence_data_tmp{header};
 	  $seq=$sequence_data_tmp{seq};
 	  $seq=~s/\s+//g;
@@ -854,6 +872,7 @@ system $cmd;
 	open (OUTT, ">$names{spadatabbed}") || die "Can not open $names{spadatabbed} for writing: $!\n";
    printf OUTT "\t\tseq\tmotif_name\tseq_name\tCformula\tmotif\n";
 	$nu=0;
+ 
  foreach $key (sort {$uniqseq{$a} cmp $uniqseq{$b}} keys (%uniqseq))
   {
   	printf OUT2 "%s\n%s\n",$uniqseq{$key},$origseq{$uniqseq{$key}}; 
