@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-
 use File::Copy 'move';
 use threads;
 use Config;
@@ -8,8 +7,8 @@ use lib "$FindBin::Bin";
 use cysmotif;
 
 $program="cysmotif_searcher.pl";  
-$version="3.2";
-$last_update="May 23, 2019";
+$version="3.3";
+$last_update="December 11, 2019";
 $comment="Written by Andrew Shelenkov, VIGG of RAS";
 
 #$signalp="/home/fallandar/spada_soft/signalp-4.1/signalp";
@@ -136,7 +135,7 @@ if ($ARGV[0] eq "-h" || $ARGV[0] eq "-help" || $ARGV[0] eq "--help")
   printf "-i FILE1                set input fasta file to FILE1 (REQUIRED)\n";  
   printf "-m FILE2                set input motif file to FILE2 (REQUIRED)\n\n";  
   printf "-b                      delete everything after first whitespace or star (*) in input fasta headers (useful for trinity) (default=not active)\n";
-  printf "-k                      remove output sequences that are a subset of other sequences (between spada and cysmotif)(default=keep all)\n";
+  printf "-k NUM                  remove output sequences that are a subset of other sequences (between spada and cysmotif, NUM is max lg diff for seqs)(default=keep all)\n";
   printf "-f                      print results for motifs only to one file (default=each motif to separate file)\n";
   printf "-g                      start with using signalP (input file supposed to be like orfonly_with_M)\n";  
   printf "-l LG                   set max length for mature peptide to LG (default=150)\n";  
@@ -278,6 +277,7 @@ unless ($start_with_sp)
 open (IN,$motif_file) || die "Can not open $motif_file: $!\n";
 @patterns=();
 @patterns_nm=();
+%patterns_nm_hash=();
 $num_motifs=0;
 
   print_log ("Reading motif file $motif_file... ",1);
@@ -301,12 +301,15 @@ $num_motifs=0;
      $patterns[$num_motifs]=qr/($arr[1])/;
      $patterns_nm[$num_motifs]=$arr[0];
      if ($arr[0] eq "N01") {$n01=1; $posn01=$num_motifs;}
+     $patterns_nm_hash{$arr[0]}=$num_motifs;
     }
     else
     {
     	#old format
      $patterns[$num_motifs]=qr/($_)/;
-     $patterns_nm[$num_motifs]=sprintf "motif%02d",$num_motifs+1;
+     $tmp=sprintf "motif%02d",$num_motifs+1;
+     $patterns_nm[$num_motifs]=$tmp;
+     $patterns_nm_hash{$tmp}=$num_motifs;
      #print "$num_motifs $patterns_nm[$num_motifs]\n";
     }
    	$num_motifs++;
@@ -317,7 +320,7 @@ $num_motifs=0;
 }
 $bignum=$num_motifs+10;
 @tarr=(0..$num_motifs-1,$bignum-1);
-$patterns_nm[$bignum-1]="CYSRICH";
+$patterns_nm[$bignum-1]="CYSRICH"; $patterns_nm_hash{"CYSRICH"}=$bignum-1;
 #read contigs and translate by 6 reading frames
 unless ($skip_translation)
 {
@@ -612,8 +615,11 @@ if (-e $signalp)
 	{
 		if (/>/)
 		{
+			chomp;
 			@arr=split /\*/;
-			printf XXO "%s\n",$arr[0];
+			@arr2=split /\-/,$arr[0];
+			printf XXO "%s\n",$arr2[0]."-".$arr2[1]."-".$arr2[2];
+			#printf XXO "%s\n",$arr[0];
 		}
 		else
 		{printf XXO $_;}
@@ -663,8 +669,8 @@ if (-e $names{gff})
    
    open OUT2, ">$names{signalp}" || die "Can not open $names{signalp} for writing: $!\n";
    
-   $motif_sigp=0; $motif_sigp_un_lt=0; %uniq_signalp=(); 
-   $motif_sigp_cysrich=0; $motif_sigp_un_lt_cysrich=0;
+   $motif_sigp=0; %uniq_signalp=(); 
+   $motif_sigp_cysrich=0;
    if ($start_with_sp) {$num_sp=0;}
    while (read_fasta_sequence($fh, \%sequence_data_tmp)) 
   {
@@ -702,23 +708,7 @@ if (-e $names{gff})
    				{$motif_sigp++;}
    				
    				unless ((length($t2)>$limit_length) || (exists $uniq_signalp{$seq}))
-   				{
-   				 $uniq_signalp{$seq}=$name;
-   				 if ($cysrich)
-   				{$motif_sigp_un_lt_cysrich++;}
-   				else
-   				{$motif_sigp_un_lt++;}
-   				 
-   				 @arr=split /\*/,$name;
-   				 if ($cysrich)
-   				 {$motif_stat_final{$bignum}++;}
-   				 else 
-   				 {   				 
-   				   $tx=$arr[1];
-   				 	 $indexx=0;
-   				   ++$indexx until $patterns_nm[$indexx] eq $tx or $indexx > $#patterns_nm;
-   				   $motif_stat_final{$indexx+1}++; 
-   				 }
+   				{ $uniq_signalp{$seq}=$name; }
    				 #get cysteine formula for mature peptide
    				 $formc=cformula($t2);
    				 #print to combined final fasta file
@@ -746,6 +736,36 @@ else
 	$names{end}=$filename_noext."_motifs_orfonly_withM.fasta";
 	delete $names{gff};
 }
+
+#remove seqs those are subseqs of other seqs (for cysmotif only now)
+  $cmd=sprintf "cysmotif_fasta_cleaner.pl -l %d %s > %s", $keep_subseqs_lg,$names{end},"${filename_noext}_tmp1.fasta";
+ 	system $cmd;
+ 	open $fh,"${filename_noext}_tmp1.fasta" || print LOG "WARNING: Can not open filtered motif file - skipping it: $!\n";
+ 	open (OUT2,">$names{final}") || die "Can not open $names{final} for writing: $!\n"; 
+ 	%motif_stat_final=(); $motif_sigp_un_lt_cysrich=0; $motif_sigp_un_lt=0;
+  while (read_fasta_sequence($fh, \%sequence_data_tmp)) 
+  {
+  	#read sequences from filtered file and restore splitting points and motifs from %origseq
+  	$name=$sequence_data_tmp{header};
+  	#get final statistics for motifs (some of the previously found could be already filtered out)
+  	@arr3=split /\*/,$name;
+  	print "$name\t$arr3[1]\t$patterns_nm_hash{$arr3[1]}\n";
+  	$motif_stat_final{$patterns_nm_hash{$arr3[1]}+1}++;
+  	if ($arr3[1] eq "CYSRICH")
+     {$motif_sigp_un_lt_cysrich++;}
+    else
+    {$motif_sigp_un_lt++;}
+  	
+	  $seq=$sequence_data_tmp{seq};
+	  $seq=~s/\s+//g;
+    $seq=~s/\*//g;
+    $seq=~s/[^A-Za-z]//g;
+    $seq2=uc($seq);
+    printf OUT2 "%s\n%s\n",$name,$origseq{$name};
+	}
+	close $fh;
+	close OUT2;
+	unlink "${filename_noext}_tmp1.fasta";
 
 #print statistics
 print_log "Calculating statistics.";
@@ -818,7 +838,7 @@ unless ($no_spada)
  printf OUT "\nTotal sequences found by spada: %d\n", get_num_str_by_grep("${dirname}_spada/61_final.fasta",">");
  
  #combine results with spada and get unique sequences; all other factors held equal, spada results are removed when duplication found 
- system "cat $names{end} ${dirname}_spada/61_final.fasta > ${filename_noext}_tmp1.fasta";
+ system "cat $names{final} ${dirname}_spada/61_final.fasta > ${filename_noext}_tmp1.fasta";
   
  unless ($keep_subseqs)
  {
@@ -839,7 +859,7 @@ unless ($no_spada)
     $seq=~s/\*//g;
     $seq=~s/[^A-Za-z]//g;
     $seq2=uc($seq);
-    $uniqseq{$seq2} =$name;
+    $uniqseq{$seq2}=$name;
     unless (exists $origseq{$name} || exists $tabseq{$name})
     #spada
      {
@@ -888,8 +908,6 @@ unless ($start_with_sp)
    $cmd=sprintf "mkdir %s",$dirname;
    system $cmd;
   }
-  $cmd=sprintf "cp %s %s",$names{end},$names{final};
-  system $cmd;
   
    @flist=();
   foreach $file (keys (%names))
