@@ -7,7 +7,7 @@ use lib "$FindBin::Bin";
 use cysmotif;
 
 $program="cysmotif_searcher.pl";  
-$version="3.3";
+$version="3.3.1";
 $last_update="December 11, 2019";
 $comment="Written by Andrew Shelenkov, VIGG of RAS";
 
@@ -15,6 +15,7 @@ $comment="Written by Andrew Shelenkov, VIGG of RAS";
 #$signalp="/mss2/export/Projects/Chrysanthemum-miRNA/raw_data/signalp-4.1/signalp";
 #$signalp="/data2/andrew/bin/signalp-4.1/signalp";
 $signalp="/export/home/shelenkov/bin/signalp-4.1/signalp";
+$signalpx="/export/home/shelenkov/bin/signalp-5.0/bin/signalp";
 $spada="/export/home/shelenkov/soft/spada/spada.pl";
 $spada_dir="/export/home/shelenkov/soft/spada";
 
@@ -271,6 +272,17 @@ $|=1;
 
 printf LOG "###Starting %s, version %s, last update %s###\n### %s ###\n",$program,$version,$last_update,$comment; 
 print_log "Command line: $arg\n";
+
+if (-e $signalp)
+{
+	#get version of signalp
+	$signalp_version=4;
+	open (INN, "$signalp -version 2>/dev/null|");
+	$line=<INN>;
+	close IN;
+	if (index($line,"version 5.0")!=-1)
+	{$signalp_version=5;}
+}
 
 unless ($start_with_sp)
 {
@@ -602,35 +614,47 @@ else
 {
 	print_log "Starting processing from signalP analysis...";
 	$names{morfM}=$filename_source;
-	$names{gff}=$filename_noext."_signalp.gff";
 }   
 if (-e $signalp)
 #run signalp
 {
-	
-	#make compatible file for stupid signalp
-	open (XX,$names{morfM});
-	open (XXO,">${filename_noext}_signalp.tmp");
-	while (<XX>)
+	if ($signalp_version!=5)
 	{
-		if (/>/)
-		{
-			chomp;
-			@arr=split /\*/;
-			@arr2=split /\-/,$arr[0];
-			printf XXO "%s\n",$arr2[0]."-".$arr2[1]."-".$arr2[2];
-			#printf XXO "%s\n",$arr[0];
-		}
-		else
-		{printf XXO $_;}
-	}
-	close XX;
-	close XXO;
-	#run
- $cmd=sprintf "%s -c 0 -n %s %s >/dev/null 2>&1",$signalp,$names{gff},"${filename_noext}_signalp.tmp";
+		$names{gff}=$filename_noext."_signalp.gff";
+   	#make compatible file for stupid signalp
+   	open (XX,$names{morfM});
+   	open (XXO,">${filename_noext}_signalp.tmp");
+   	while (<XX>)
+   	{
+   		if (/>/)
+   		{
+   			chomp;
+   			@arr=split /\*/;
+   			@arr2=split /\-/,$arr[0];
+   			printf XXO "%s\n",$arr2[0]."-".$arr2[1]."-".$arr2[2];
+   			#printf XXO "%s\n",$arr[0];
+   		}
+   		else
+   		{printf XXO $_;}
+   	}
+   	close XX;
+   	close XXO;
+   	#run
+    $cmd=sprintf "%s -c 70 -n %s %s >/dev/null 2>&1",$signalp,$names{gff},"${filename_noext}_signalp.tmp";
+  }
+  else
+  {
+  	($names{gff}=$names{morfM})=~s/.fasta$/.gff3/;
+  	($pmt=$names{morfM})=~s/.fasta$/_summary.signalp5/;
+  	$cmd=sprintf "%s -gff3 -org euk -fasta %s >/dev/null 2>&1",$signalp,$names{morfM};
+  	
+  }
  print_log "Running signalP as ".$cmd;
  system $cmd || print STDERR "signalp failed: $!\n";
- unlink "${filename_noext}_signalp.tmp";
+ if ($signalp_version!=5)
+  {unlink "${filename_noext}_signalp.tmp" ;}
+ else 
+  {unlink $pmt;}
 }
 else 
 {	print_log "WARNING: signalp was not found in $signalp. Skipping.";}
@@ -708,7 +732,8 @@ if (-e $names{gff})
    				{$motif_sigp++;}
    				
    				unless ((length($t2)>$limit_length) || (exists $uniq_signalp{$seq}))
-   				{ $uniq_signalp{$seq}=$name; }
+   				{ 
+   				 $uniq_signalp{$seq}=$name; 
    				 #get cysteine formula for mature peptide
    				 $formc=cformula($t2);
    				 #print to combined final fasta file
@@ -749,7 +774,7 @@ else
   	$name=$sequence_data_tmp{header};
   	#get final statistics for motifs (some of the previously found could be already filtered out)
   	@arr3=split /\*/,$name;
-  	print "$name\t$arr3[1]\t$patterns_nm_hash{$arr3[1]}\n";
+  	
   	$motif_stat_final{$patterns_nm_hash{$arr3[1]}+1}++;
   	if ($arr3[1] eq "CYSRICH")
      {$motif_sigp_un_lt_cysrich++;}
