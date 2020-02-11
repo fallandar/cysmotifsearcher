@@ -4,7 +4,7 @@ Cysmotif searcher
 Written by Andrey Shelenkov, Vavilov Institute of General Genetics, Russian Academy Of Sciences (www.vigg.ru) and Central Reseach Institute of Epidemiology (www.crie.ru).<br>
 Last update to the program package was made on December 11, 2019. Current version is 3.3.1.<br>Made avaialble in github on November 12, 2017.
 <p>
- data1K folder contains the results of pipeline running on transcriptomes from 1kP project (https://sites.google.com/a/ualberta.ca/onekp/)
+ data1K folder contains the results of pipeline running on transcriptomes from 1kP project (https://sites.google.com/a/ualberta.ca/onekp/ , see https://doi.org/10.3390/antibiotics9020060 for the paper describing this analysis)
 <p>
 Cysmotif searcher is a set of Perl scripts that performs profile search to reveal peptide sequences possessing cysteine motifs common to various families of AMPs and other cysteine-rich peptides. It can be run on any Linux machine with Perl installed, and can also be executed on Windows machines, but with some limitations (SPADA and SignalP cannot be integrated into the pipeline in this case). Motifs to search for were derived from literature, and then were supplemented and further refined during several iterations of searching and refining steps.
 <p>
