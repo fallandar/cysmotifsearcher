@@ -8,10 +8,11 @@ Last update to the program package was made on December 11, 2019. Current versio
 <p>
 Cysmotif searcher is a set of Perl scripts that performs profile search to reveal peptide sequences possessing cysteine motifs common to various families of AMPs and other cysteine-rich peptides. It can be run on any Linux machine with Perl installed, and can also be executed on Windows machines, but with some limitations (SPADA and SignalP cannot be integrated into the pipeline in this case). Motifs to search for were derived from literature, and then were supplemented and further refined during several iterations of searching and refining steps.
 <p>
-Scinetific papers describing the application of Cysmotif searcher to real biological data analysis can be found using the links below:<br>
- 1. A.A. Shelenkov, A.A. Slavokhotova, and T. I. Odintsova (2018) Cysmotif Searcher Pipeline for Antimicrobial Peptide Identification in Plant Transcriptomes, Biochemistry (Moscow), 83(11), 1424-1432, https://www.ncbi.nlm.nih.gov/pubmed/30482154 <br>
- 2.	A.A. Slavokhotova, A. A. Shelenkov et al. (2017) Defense peptide repertoire of Stellaria media predicted by high throughput next generation sequencing, Biochimie, 135:15-27, https://www.ncbi.nlm.nih.gov/pubmed/28038935 <br>
- 3. A. A. Slavokhotova, A. A. Shelenkov, T. I. Odintsova (2015) Prediction of Leymus arenarius (L.) antimicrobial peptides based on de novo transcriptome assembly, Plant Mol. Biol., 89(3):203-14, https://www.ncbi.nlm.nih.gov/pubmed/26369913<p><p>
+Scientific papers describing the Cysmotif searcher pipeline and its applications to real biological data analysis can be found using the links below:<br>
+ <ol><li>A. Shelenkov, A. Slavokhotova, T. Odintsova (2020) Predicting Antimicrobial and Other Cysteine-Rich Peptides in 1267 Plant Transcriptomes, Antibiotics (Basel), 9(2):60, https://doi.org/10.3390/antibiotics9020060, https://www.ncbi.nlm.nih.gov/pubmed/32032999</li>
+ <li>A.A. Shelenkov, A.A. Slavokhotova, and T. I. Odintsova (2018) Cysmotif Searcher Pipeline for Antimicrobial Peptide Identification in Plant Transcriptomes, Biochemistry (Moscow), 83(11), 1424-1432, https://www.ncbi.nlm.nih.gov/pubmed/30482154 </li>
+ <li>A.A. Slavokhotova, A. A. Shelenkov et al. (2017) Defense peptide repertoire of Stellaria media predicted by high throughput next generation sequencing, Biochimie, 135:15-27, https://www.ncbi.nlm.nih.gov/pubmed/28038935 </li>
+ <li>A. A. Slavokhotova, A. A. Shelenkov, T. I. Odintsova (2015) Prediction of Leymus arenarius (L.) antimicrobial peptides based on de novo transcriptome assembly, Plant Mol. Biol., 89(3):203-14, https://www.ncbi.nlm.nih.gov/pubmed/26369913</li></ol><p><p>
 
 General usage: cysmotif_searcher.pl [OPTIONS] -m motifs.txt -i input.fasta<br>
 You can always get help by typing cysmotif_searcher.pl --help<p>
