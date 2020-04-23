@@ -45,7 +45,7 @@ In order to include SPADA in the computational pipeline, you should download spa
 <p>
  To test your installation of cysmotifsearcher your can use the demo input file demo.fasta. Run the following command:
  <br>
- <b>cysmotif_searcher.pl -i demo.fasta -m motifs_feb16.txt</b>
+ <b>cysmotif_searcher.pl -i demo.fasta -m motifs.txt</b>
  <br>
  If you do not have any results (motifs) in the output files, then something is wrong with the installation.<br> If you do not have any results for your own input files, this could simply mean that cysmotif searcher has not found any motifs in your data. You can try additional searching with SPADA option turned on.
  <p>
