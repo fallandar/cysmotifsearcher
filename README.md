@@ -43,5 +43,11 @@ In order to check for presence of signal peptides in motifs (which is very impor
 
 In order to include SPADA in the computational pipeline, you should download spada from https://github.com/orionzhou/SPADA and follow the installation procedure described there. Then you should specify the path to SPADA installation in cysmotif_searcher.pl under $spada_dir variable and to SPADA executable (spada.pl) under $spada variable.
 <p>
+ To test your installation of cysmotifsearcher your can use the demo input file demo.fasta. Run the following command:
+ <br>
+ <b>cysmotif_searcher.pl -i demo.fasta -m motifs_feb16.txt</b>
+ <br>
+ If you do not have any results (motifs) in the output files, then something is wrong with the installation.<br> If you do not have any results for your own input files, this could simply mean that cysmotif searcher has not found any motifs in your data. You can try additional searching with SPADA option turned on.
+ <p>
  Licensed under the GNU GENERAL PUBLIC LICENSE Version 3 (the "License");
  you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.gnu.org/licenses/gpl.html
