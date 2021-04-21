@@ -1,7 +1,7 @@
 # cysmotifsearcher
 Cysmotif searcher
 
-Written by Andrey Shelenkov, Vavilov Institute of General Genetics, Russian Academy Of Sciences (www.vigg.ru) and Central Reseach Institute of Epidemiology (www.crie.ru).<br>
+Written by Andrey Shelenkov, Central Reseach Institute of Epidemiology (www.crie.ru).<br>
 Last update to the program package was made on December 11, 2019. Current version is 3.3.1.<br>Made avaialble in github on November 12, 2017.
 <p>
  data1K folder contains the results of pipeline running on transcriptomes from 1kP project (https://sites.google.com/a/ualberta.ca/onekp/ , see https://doi.org/10.3390/antibiotics9020060 for the paper describing this analysis)
@@ -9,8 +9,8 @@ Last update to the program package was made on December 11, 2019. Current versio
 Cysmotif searcher is a set of Perl scripts that performs profile search to reveal peptide sequences possessing cysteine motifs common to various families of AMPs and other cysteine-rich peptides. It can be run on any Linux machine with Perl installed, and can also be executed on Windows machines, but with some limitations (SPADA and SignalP cannot be integrated into the pipeline in this case). Motifs to search for were derived from literature, and then were supplemented and further refined during several iterations of searching and refining steps.
 <p>
 Scientific papers describing the Cysmotif searcher pipeline and its applications to real biological data analysis can be found using the links below:<br>
- <ol><li>A. Shelenkov, A. Slavokhotova, T. Odintsova (2020) Predicting Antimicrobial and Other Cysteine-Rich Peptides in 1267 Plant Transcriptomes, Antibiotics (Basel), 9(2):60, https://doi.org/10.3390/antibiotics9020060, https://www.ncbi.nlm.nih.gov/pubmed/32032999</li>
- <li>A.A. Shelenkov, A.A. Slavokhotova, and T. I. Odintsova (2018) Cysmotif Searcher Pipeline for Antimicrobial Peptide Identification in Plant Transcriptomes, Biochemistry (Moscow), 83(11), 1424-1432, https://www.ncbi.nlm.nih.gov/pubmed/30482154 </li>
+ <ol><li>A. Shelenkov, A. Slavokhotova, T. Odintsova (2020) Predicting Antimicrobial and Other Cysteine-Rich Peptides in 1267 Plant Transcriptomes, Antibiotics (Basel), 9(2):60, https://doi.org/10.3390/antibiotics9020060, https://www.ncbi.nlm.nih.gov/pubmed/32032999 (please cite this paper if you use the results provided in data1k folder)</li>
+ <li>A.A. Shelenkov, A.A. Slavokhotova, and T. I. Odintsova (2018) Cysmotif Searcher Pipeline for Antimicrobial Peptide Identification in Plant Transcriptomes, Biochemistry (Moscow), 83(11), 1424-1432, https://www.ncbi.nlm.nih.gov/pubmed/30482154 (please cite this paper if you publish the results obtained using Cymotif searcher for your own data)</li>
  <li>A.A. Slavokhotova, A. A. Shelenkov et al. (2017) Defense peptide repertoire of Stellaria media predicted by high throughput next generation sequencing, Biochimie, 135:15-27, https://www.ncbi.nlm.nih.gov/pubmed/28038935 </li>
  <li>A. A. Slavokhotova, A. A. Shelenkov, T. I. Odintsova (2015) Prediction of Leymus arenarius (L.) antimicrobial peptides based on de novo transcriptome assembly, Plant Mol. Biol., 89(3):203-14, https://www.ncbi.nlm.nih.gov/pubmed/26369913</li></ol><p><p>
 
@@ -43,7 +43,7 @@ In order to check for presence of signal peptides in motifs (which is very impor
 
 In order to include SPADA in the computational pipeline, you should download spada from https://github.com/orionzhou/SPADA and follow the installation procedure described there. Then you should specify the path to SPADA installation in cysmotif_searcher.pl under $spada_dir variable and to SPADA executable (spada.pl) under $spada variable.
 <p>
- To test your installation of cysmotifsearcher your can use the demo input file demo.fasta. Run the following command:
+ To test your installation of cysmotifsearcher you can use the demo input file demo.fasta. Run the following command:
  <br>
  <b>cysmotif_searcher.pl -i demo.fasta -m motifs.txt</b>
  <br>
