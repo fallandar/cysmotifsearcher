@@ -1,9 +1,11 @@
 #!/usr/bin/perl
+use FindBin; 
+use lib "$FindBin::Bin"; 
 
 use cysmotif qw (read_fasta_sequence rename_spada);
 $program="cysmotif_fasta_cleaner.pl";  
-$version="1.1";
-$last_update="December 11, 2019";
+$version="1.1.1";
+$last_update="January 21, 2022";
 $comment="Written by Andrew Shelenkov, VIGG of RAS";
 $usage="$program [OPTIONS] cysmotif_fasta_file(s)...";
 
