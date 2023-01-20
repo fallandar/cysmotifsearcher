@@ -7,15 +7,12 @@ use lib "$FindBin::Bin";
 use cysmotif;
 
 $program="cysmotif_searcher.pl";  
-$version="3.3.1";
-$last_update="December 11, 2019";
-$comment="Written by Andrew Shelenkov, VIGG of RAS";
+$version="3.3.2";
+$last_update="January 20, 2023";
+$comment="Written by Andrew Shelenkov, CRIE";
 
-#$signalp="/home/fallandar/spada_soft/signalp-4.1/signalp";
-#$signalp="/mss2/export/Projects/Chrysanthemum-miRNA/raw_data/signalp-4.1/signalp";
-#$signalp="/data2/andrew/bin/signalp-4.1/signalp";
-$signalp="/export/home/shelenkov/bin/signalp-4.1/signalp";
-$signalpx="/export/home/shelenkov/bin/signalp-5.0/bin/signalp";
+#$signalp4="/export/home/shelenkov/bin/signalp-4.1/signalp";
+$signalp="/export/home/shelenkov/bin/signalp-5.0/bin/signalp";
 $spada="/export/home/shelenkov/soft/spada/spada.pl";
 $spada_dir="/export/home/shelenkov/soft/spada";
 
@@ -252,7 +249,7 @@ else
 
 #create names
 %names=(mpre=>"${filename_noext}_motifs_pre.fasta",morf=>"${filename_noext}_motifs_orfonly.fasta", morfM=>"${filename_noext}_motifs_orfonly_withM.fasta",
-     mhtml=>"${filename_noext}_motifs.html",gff=>"${filename_noext}_motifs_orfonly_withM_signalp.gff",tabbed=>"${filename_noext}_motifs_final_tabbed.txt",
+     mhtml=>"${filename_noext}_motifs_final.html",gff=>"${filename_noext}_motifs_orfonly_withM_signalp.gff",tabbed=>"${filename_noext}_motifs_final_tabbed.txt",
      final=>"${filename_noext}_motifs_final.fasta",logf=>"${filename_noext}.log",stats=>$statn);
      
 unless ($no_spada) 
@@ -430,10 +427,10 @@ unless ($start_with_sp)
   open (OUT,">$names{mpre}") || die "Can not open $names{mpre} for writing: $!\n";
   open (OUTX,">$names{morf}") || die "Can not open $names{morf} for writing: $!\n";
   open (OUTXX,">$names{morfM}") || die "Can not open $names{morfM} for writing: $!\n";
-  open (OUTH,">$names{mhtml}") || die "Can not open $names{mhtml} for writing: $!\n";
+  #open (OUTH,">$names{mhtml}") || die "Can not open $names{mhtml} for writing: $!\n";
   
-  printf OUTH "<HTML>\n<BODY>\n";
-  print OUTH "$print_header<p>";
+  #printf OUTH "<HTML>\n<BODY>\n";
+  #print OUTH "$print_header<p>";
   @max=(0, 0, 0);
   @min=(10000,10000,10000);
   %uniq=();
@@ -582,16 +579,16 @@ unless ($start_with_sp)
   	      	printf {$filehandle{$uniq{$key}[3]-1}} "%s%s\n",$uniq{$key}[0],$tmp;
   	      }
   	      
-        $tmp=~s/[c]/<font color=red>c<\/font>/g;
-   		  $tmp=~s/[C]/<font color=red>C<\/font>/g;
-   		  printf OUTH "<BR>%s\n<BR>%s\n<BR>",$uniq{$key}[0],$tmp;
+        #$tmp=~s/[c]/<font color=red>c<\/font>/g;
+   		  #$tmp=~s/[C]/<font color=red>C<\/font>/g;
+   		  #printf OUTH "<BR>%s\n<BR>%s\n<BR>",$uniq{$key}[0],$tmp;
        }
   close OUT;
   close OUTX;
   close OUTXX;
-  printf OUTH "<BR>;full range pattern: CX{%d,%d}CXXXCX{%d,%d}CX{%d,%d}CXC\n\n",$min[0],$max[0],$min[1],$max[1],$min[2],$max[2] if ($n01 && $max[0]+$max[1]+$max[2]>0);
-  printf OUTH "<\/BODY>\n<\/HTML>\n";
-  close OUTH;
+  #printf OUTH "<BR>;full range pattern: CX{%d,%d}CXXXCX{%d,%d}CX{%d,%d}CXC\n\n",$min[0],$max[0],$min[1],$max[1],$min[2],$max[2] if ($n01 && $max[0]+$max[1]+$max[2]>0);
+  #printf OUTH "<\/BODY>\n<\/HTML>\n";
+  #close OUTH;
   
   if ($print_files)
   {
@@ -684,7 +681,7 @@ if (-e $names{gff})
    open OUT3, ">$names{end}" || die "Can not open $names{end} for writing: $!\n";
    
    open OUT4, ">$names{tabbed}" || die "Can not open $names{tabbed} for writing: $!\n";
-   printf OUT4 "\t\tseq\tmotif_name\tseq_name\tCformula\tmotif\n";
+   printf OUT4 "org_id\tmotif_name\tmotif_seq\tmotif\tseq_name\tseq\tCformula\n";
       
    unless ($start_with_sp)
    {$names{signalp}=$filename_noext."_motifs_orfonly_withM_signalp.fasta";}
@@ -696,6 +693,12 @@ if (-e $names{gff})
    $motif_sigp=0; %uniq_signalp=(); 
    $motif_sigp_cysrich=0;
    if ($start_with_sp) {$num_sp=0;}
+   
+   #html file with marked cysteines
+   open (OUTH,">$names{mhtml}") || die "Can not open $names{mhtml} for writing: $!\n";
+   printf OUTH "<HTML>\n<BODY>\n";
+   print OUTH "$print_header<p>";
+   
    while (read_fasta_sequence($fh, \%sequence_data_tmp)) 
   {
   	$name=$sequence_data_tmp{header};
@@ -741,11 +744,31 @@ if (-e $names{gff})
    				 $seqt=sprintf "%s %s",$t1,$t2;
    				 print OUT3 "$nmt\n$seqt\n";
    				 $origseq{$nmt}=$seqt;
-   				 $arr[0]=~s/>//;
+   				 #$arr[0]=~s/>//;
    				 #print to tab-delimited output file
-   				 $topr=sprintf "\t\t%s %s\t%s\t%s\t%s\t%s\n",$t1,$t2,$arr[1],$arr[0],$formc,$arr[2];
+   				 
+   				 
+   				 #printf OUT4 "org_id\tmotif_name\tmotif_seq\tmotif\tseq_name\tseq\tCformula\n";
+   				 ($fnn=${filename_noext})=~s/_translated//;
+   				 @arrtmp=split /\*/,$name;
+   				 $arrtmp[0]=~s/>//;
+   				 if ($cysrich)
+   				 {$arrtmp[2]="---"; $t2xx="---";}
+   				 else
+   				 #get motif seq
+   				 {($t2xx=$t2)=~s/[A-Z]//g;}
+   				 
+   				 $topr=sprintf "%s\t%s\t%s\t%s\t%s\t%s %s\t%s\n",$fnn,$arrtmp[1],$t2xx,$arrtmp[2],$arrtmp[0],$t1,$t2,$formc;
    				 print OUT4 $topr;
+   				 
    				 $tabseq{$nmt}=$topr;
+   				 
+   				 #print to html file
+   				 ($t2xx=$t2)=~s/([a-z]+)/<b>$1<\/b>/g;
+   				 $t2xx=~s/[c]/<font color=red>c<\/font>/g;
+   		     $t1=~s/[C]/<font color=red>C<\/font>/g;
+   		     $t2xx=~s/[C]/<font color=red>C<\/font>/g;
+   		     printf OUTH "<BR>%s\n<BR>%s %s\n<BR>",$name,$t1,$t2xx;
    				}
    			}
    	 }
@@ -754,6 +777,8 @@ if (-e $names{gff})
    close OUT2;
    close OUT3;
    close OUT4;
+   printf OUTH "<\/BODY>\n<\/HTML>\n";
+   close OUTH;
 }
 else 
 {
