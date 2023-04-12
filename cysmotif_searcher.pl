@@ -7,8 +7,8 @@ use lib "$FindBin::Bin";
 use cysmotif;
 
 $program="cysmotif_searcher.pl";  
-$version="3.3.2";
-$last_update="January 20, 2023";
+$version="3.3.3";
+$last_update="April 12, 2023";
 $comment="Written by Andrew Shelenkov, CRIE";
 
 #$signalp4="/export/home/shelenkov/bin/signalp-4.1/signalp";
@@ -97,7 +97,7 @@ sub cformula
 
 #default values and init
 $delete_after_blank=0;
-#$noendc=1;
+$noendc=1; $multi=0;
 $no_spada=1;
 $num_threads=1;
 $prefix="";
@@ -133,6 +133,7 @@ if ($ARGV[0] eq "-h" || $ARGV[0] eq "-help" || $ARGV[0] eq "--help")
   printf "-i FILE1                set input fasta file to FILE1 (REQUIRED)\n";  
   printf "-m FILE2                set input motif file to FILE2 (REQUIRED)\n\n";  
   printf "-b                      delete everything after first whitespace or star (*) in input fasta headers (useful for trinity) (default=not active)\n";
+  printf "-c                      print motifs in CYSRICH group in lowercase (default=off)\n";  
   printf "-k NUM                  remove output sequences that are a subset of other sequences (between spada and cysmotif, NUM is max lg diff for seqs)(default=keep all)\n";
   printf "-f                      print results for motifs only to one file (default=each motif to separate file)\n";
   printf "-g                      start with using signalP (input file supposed to be like orfonly_with_M)\n";  
@@ -155,9 +156,9 @@ while ($ARGV[0]=~ /^-/)
  if ($ARGV[0]=~ /-b/)
  #delete everything after first whitespace in input fasta headers
  {$delete_after_blank=1;}
- #if ($ARGV[0]=~ /-c/)
- #allow presence of cysteines in mature peptide after motif (default=not allowed)
- #{$noendc=0;}
+ elsif ($ARGV[0]=~ /-c/)
+ #allow presence of cysteines in mature peptide after motif, but still put them into CYSRICH (affects only printing motif in lowercase) (default=not allowed)
+ {$noendc=0;}
  elsif ($ARGV[0]=~ /-f/)
  #print results for each motif to separate file
  {$print_files=0;}
@@ -217,6 +218,10 @@ while ($ARGV[0]=~ /^-/)
  	$skip_translation=1;
  	$no_spada=1; #spada need nucleotide seqs
  }
+ elsif ($ARGV[0]=~ /-u/)
+ #useful for searching the second motifs in ORFs of output files from first round of search; 
+ #fasta seqs are not converted to uppercase, and thus previously found motifs are ignored since they are shown in lowercase
+ {$multi=1;}
  elsif ($ARGV[0]=~ /-y/)
  #set dir with spada results (if already present)
  {
@@ -439,7 +444,10 @@ unless ($start_with_sp)
   while (read_fasta_sequence($fh, \%sequence_data_tmp)) 
   {
   	    $name=$sequence_data_tmp{header};
-  	    $seq=uc($sequence_data_tmp{seq}); 
+  	    $seq=$sequence_data_tmp{seq}; 
+  	    
+  	    $seq=uc($seq) unless ($multi); 
+  	    
   	    if ($skip_translation && !$num_seqs && $seq=~/^[ACTG]+$/)
   	    {
   	    	#nucleic acid sequence found in translated file - exiting
@@ -482,6 +490,7 @@ unless ($start_with_sp)
 	      $name=~s/\*/_/g;
     	  $k=0;
     	  $match=""; $matchx=""; $match_orf=""; $numm=-1; $final_endc=0;
+    	  
     		for ($i=0;$i<=$num_motifs-1;$i++) 
     		{
     			#search for motifs in sequence
@@ -490,9 +499,10 @@ unless ($start_with_sp)
    		      $tmp=$1;
    		      	if ($i == $posn01)
    		       	  {$num1=length $2; $num2=length $3; $num3=length $4;}
-   		       	  
-   		      if ( ($seq=~/_([A-Z]*${tmp}([A-Z]*))_/) || ($seq=~/_([A-Z]*${tmp}([A-Z]*)$)/)|| ($seq=~/(^[A-Z]*${tmp}([A-Z]*))_/) || ($seq=~/(^[A-Z]*${tmp}([A-Z]*)$)/)) 
+   		      if ( ($seq=~/_([A-Za-z]*?${tmp}([A-Z]*?))_/) || ($seq=~/_([A-Za-z]*?${tmp}([A-Z]*?)$)/)|| ($seq=~/(^[A-Za-z]*?${tmp}([A-Z]*?))_/) || ($seq=~/(^[A-Za-z]*?${tmp}([A-Z]*?)$)/)) 
      		     {
+     		     	#if two or more motifs exist, take the first only
+     		     	          	
      		     	$endc=0;
      		     	#collect uniq seqs in ORF
      		     	$tmporf=$1;
@@ -553,7 +563,7 @@ unless ($start_with_sp)
        	$tmp=$uniq{$key}[2];
        	$tmp2=$uniq{$key}[1];
        	$tmp3=$key;
-       	unless ($uniq{$key}[3]==$bignum)
+       	unless ( ($uniq{$key}[3]==$bignum) && ($noendc))
        	{
        	 $tmp2x=lc($tmp2);
        	 $tmp=~s/$tmp2/$tmp2x/;
