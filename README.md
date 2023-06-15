@@ -2,7 +2,7 @@
 Cysmotif searcher
 
 Written by Andrey Shelenkov, Central Reseach Institute of Epidemiology (www.crie.ru).<br>
-Last update to the program package was made on December 11, 2019. Current version is 3.3.1.<br>Made avaialble in github on November 12, 2017.
+Last update to the program package was made on April 12, 2023. Current version is 3.3.3.<br>Made avaialble in github on November 12, 2017.
 <p>
  data1K folder contains the results of pipeline running on transcriptomes from 1kP project (https://sites.google.com/a/ualberta.ca/onekp/ , see https://doi.org/10.3390/antibiotics9020060 for the paper describing this analysis)
 <p>
@@ -22,6 +22,8 @@ List of options is as follows:<br>
 -m FILE2                set input motif file to FILE2 (REQUIRED)<p>
 
 -b                      delete everything after first whitespace or star (*) in input fasta headers (useful for trinity)    (default=not active)<br>
+-c                      print motifs in CYSRICH group in lowercase (default=off)<br>
+-k NUM                  remove output sequences that are a subset of other sequences (between spada and cysmotif, NUM is max lg diff for seqs)(default=keep all)<br>
 -f                      print results for motifs only to one file (default=each motif to separate file)<br>
 -g                      start with using signalP (input file supposed to be like orfonly_with_M)<br>
 -l LG                   set max length for mature peptide to LG (default=150)<br>
