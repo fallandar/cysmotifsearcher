@@ -12,13 +12,13 @@ Cysmotif searcher is a set of Perl scripts that performs profile search to revea
  The latest paper describing the application of Cysmotif searcher to discovering peptides belonging to alpha-hairpinin family can be found here:
  </p>
  <p>
-  A. Slavokhotova, A. Shelenkov, E. Rogozhin (2024) Computational Prediction and Structural Analysis of α-Hairpinins, a Ubiquitous Family of Antimicrobial Peptides, Using the Cysmotif Searcher Pipeline, Antibiotics (Basel), 13(11), 1019, https://doi.org/10.3390/antibiotics13111019
+  <b></b>A. Slavokhotova, A. Shelenkov, E. Rogozhin (2024) Computational Prediction and Structural Analysis of α-Hairpinins, a Ubiquitous Family of Antimicrobial Peptides, Using the Cysmotif Searcher Pipeline, Antibiotics (Basel), 13(11), 1019, https://doi.org/10.3390/antibiotics13111019</b>
  <p>
   Please use motifs_hairpinin.txt as a motif file to search for alpha-hairpinins. The instructions for searching modular alpha-hairpinin precursor peptides with multiple motifs can be found in the paper given above and cysmotif_modular.sh.
  </p>
 Scientific papers describing the Cysmotif searcher pipeline and its applications to real biological data analysis can be found using the links below:<br>
  <ol><li>A. Shelenkov, A. Slavokhotova, T. Odintsova (2020) Predicting Antimicrobial and Other Cysteine-Rich Peptides in 1267 Plant Transcriptomes, Antibiotics (Basel), 9(2):60, https://doi.org/10.3390/antibiotics9020060, https://www.ncbi.nlm.nih.gov/pubmed/32032999 (please cite this paper if you use the results provided in data1k folder)</li>
- <li>A.A. Shelenkov, A.A. Slavokhotova, and T. I. Odintsova (2018) Cysmotif Searcher Pipeline for Antimicrobial Peptide Identification in Plant Transcriptomes, Biochemistry (Moscow), 83(11), 1424-1432, https://www.ncbi.nlm.nih.gov/pubmed/30482154 (please cite this paper if you publish the results obtained using Cymotif searcher for your own data)</li>
+ <li>A.A. Shelenkov, A.A. Slavokhotova, and T. I. Odintsova (2018) Cysmotif Searcher Pipeline for Antimicrobial Peptide Identification in Plant Transcriptomes, Biochemistry (Moscow), 83(11), 1424-1432, https://www.ncbi.nlm.nih.gov/pubmed/30482154 (please cite this paper if you publish the results obtained using Cysmotif searcher for your own data)</li>
  <li>A.A. Slavokhotova, A. A. Shelenkov et al. (2017) Defense peptide repertoire of Stellaria media predicted by high throughput next generation sequencing, Biochimie, 135:15-27, https://www.ncbi.nlm.nih.gov/pubmed/28038935 </li>
  <li>A. A. Slavokhotova, A. A. Shelenkov, T. I. Odintsova (2015) Prediction of Leymus arenarius (L.) antimicrobial peptides based on de novo transcriptome assembly, Plant Mol. Biol., 89(3):203-14, https://www.ncbi.nlm.nih.gov/pubmed/26369913</li></ol><p><p>
 
