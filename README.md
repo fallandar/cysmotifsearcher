@@ -8,6 +8,14 @@ Last update to the program package was made on April 12, 2023. Current version i
 <p>
 Cysmotif searcher is a set of Perl scripts that performs profile search to reveal peptide sequences possessing cysteine motifs common to various families of AMPs and other cysteine-rich peptides. It can be run on any Linux machine with Perl installed, and can also be executed on Windows machines, but with some limitations (SPADA and SignalP cannot be integrated into the pipeline in this case). Motifs to search for were derived from literature, and then were supplemented and further refined during several iterations of searching and refining steps.
 <p>
+ <p>
+ The latest paper describing the application of Cysmotif searcher to discovering peptides belonging to alpha-hairpinin family can be found here:
+ </p>
+ <p>
+  A. Slavokhotova, A. Shelenkov, E. Rogozhin (2024) Computational Prediction and Structural Analysis of α-Hairpinins, a Ubiquitous Family of Antimicrobial Peptides, Using the Cysmotif Searcher Pipeline, Antibiotics (Basel), 13(11), 1019, https://doi.org/10.3390/antibiotics13111019
+ <p>
+  Please use motifs_hairpinin.txt as a motif file to search for alpha-hairpinins. The instructions for searching modular alpha-hairpinin precursor peptides with multiple motifs can be found in the paper given above and cysmotif_modular.sh.
+ </p>
 Scientific papers describing the Cysmotif searcher pipeline and its applications to real biological data analysis can be found using the links below:<br>
  <ol><li>A. Shelenkov, A. Slavokhotova, T. Odintsova (2020) Predicting Antimicrobial and Other Cysteine-Rich Peptides in 1267 Plant Transcriptomes, Antibiotics (Basel), 9(2):60, https://doi.org/10.3390/antibiotics9020060, https://www.ncbi.nlm.nih.gov/pubmed/32032999 (please cite this paper if you use the results provided in data1k folder)</li>
  <li>A.A. Shelenkov, A.A. Slavokhotova, and T. I. Odintsova (2018) Cysmotif Searcher Pipeline for Antimicrobial Peptide Identification in Plant Transcriptomes, Biochemistry (Moscow), 83(11), 1424-1432, https://www.ncbi.nlm.nih.gov/pubmed/30482154 (please cite this paper if you publish the results obtained using Cymotif searcher for your own data)</li>
